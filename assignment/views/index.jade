@@ -3,5 +3,11 @@ extends layout
 block content
     .ui.container
         .ui.basic.center.aligned.segment
-            h1 CAB432
-            p Sachin and Shannon
+            h1 Twitter Sentiment Analysis
+            p CAB432 Assingment 2 - Sachin and Shannon
+            
+
+            label(for="inputHashtags" class="sr-only") Enter hashtags        
+            .ui.action.input
+              input(type='text' id="inputHashtags" placeholder='CloudComputing')
+              button.ui.button Search

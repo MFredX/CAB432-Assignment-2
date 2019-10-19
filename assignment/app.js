@@ -6,7 +6,8 @@ var logger = require('morgan');
 const helmet = require('helmet');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var aboutRouter = require('./routes/about');
+var resultsRouter = require('./routes/results');
 
 var app = express();
 
@@ -24,20 +25,18 @@ app.use(helmet());
 const hostname = '127.0.0.1';
 const port = 3000;
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
 //serve the 'home page'
 app.get('/', (req, res) => {
   res.status(200).render('index');
 });
 
 //make available all the other routes
-
+app.use('/about', aboutRouter);
+app.use('/results', resultsRouter);
 
 //handle 404 errors
 app.use(function(req, res) {
-  return res.status(404).send('Route '+req.url+' Not found.');
+  return res.status(404).render('error', {error: "404", details: "The page you are looking for could not be found! Try checking the link"});
 });
 
 app.listen(port, function () {

@@ -6,3 +6,11 @@ body {
 a {
   color: #00B7FF;
 }
+
+.infoBlock {
+  border: 2px solid LightGray;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: left;
+  overflow: auto;
+}
