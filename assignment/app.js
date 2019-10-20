@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var bodyParser = require('body-parser');
 const helmet = require('helmet');
 
 var indexRouter = require('./routes/index');
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
+app.use(bodyParser.urlencoded({ extended: true })); 
 
 const hostname = '127.0.0.1';
 const port = 3000;

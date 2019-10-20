@@ -6,7 +6,7 @@ block content
             h1 Twitter Sentiment Analysis
             p CAB432 Assingment 2 - Sachin and Shannon #{br}
             
-            form(class="formSearch" method="POST" action="/results" style="margin-top:40px; margin-bottom:10px;")
+            form(class="formSearch" method="GET" action="/results" style="margin-top:40px; margin-bottom:10px;")
                 .ui.action.input
                     input(type='text' id="inputHashtags" name ="hashtags" placeholder="CloudComputing" required autofocus)
                     button.ui.button(class=buttonClass type="submit") Search hashtags

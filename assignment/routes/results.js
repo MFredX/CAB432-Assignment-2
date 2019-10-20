@@ -1,15 +1,16 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var router = express.Router();
 
 /* POST results - listening. */
-router.post('/', function(req, res, next) {
-    
-    var hashtags = req.body.hashtags;
-    var hashtagsArray = hashtags.split(",");
+router.get('/', function(req, res, next) {
+
+    var hashtags = req.query["hashtags"];
+    hashtags = hashtags.split(",");
 
     //Send error page is array is empty
     //FIXME: Correct error page is not loading
-    if (!hashtagsArray) { res.status(400).render('error', {error: "Nothing to search!", message: "It looks like you didn't give us any terms to search for."})}
+    if (!hashtags) { res.status(400).render('error', {error: "Nothing to search!", message: "It looks like you didn't give us any terms to search for."})}
     
     //this is where a lot of the processing will be done
 
@@ -27,7 +28,7 @@ router.post('/', function(req, res, next) {
 
     //TODO: Display results
 
-    res.status(200).render('results', {hashtags: hashtagsArray});
+    res.status(200).render('results', {hashtags: hashtags});
 });
 
 module.exports = router;
