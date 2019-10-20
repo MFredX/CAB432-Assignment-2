@@ -8,9 +8,8 @@ router.get('/', function(req, res, next) {
     var hashtags = req.query["hashtags"];
     hashtags = hashtags.split(",");
 
-    //Send error page is array is empty
-    //FIXME: Correct error page is not loading
-    if (!hashtags) { res.status(400).render('error', {error: "Nothing to search!", message: "It looks like you didn't give us any terms to search for."})}
+    //Send error page if array is empty
+    if (hashtags == "") { res.status(400).render('error', {error: "Nothing to search!", details: "It looks like you didn't give us any terms to search for."})}
     
     //this is where a lot of the processing will be done
 
