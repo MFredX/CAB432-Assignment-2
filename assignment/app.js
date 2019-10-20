@@ -25,12 +25,8 @@ app.use(helmet());
 const hostname = '127.0.0.1';
 const port = 3000;
 
-//serve the 'home page'
-app.get('/', (req, res) => {
-  res.status(200).render('index');
-});
-
-//make available all the other routes
+//make available all the routes
+app.use('/', indexRouter);
 app.use('/about', aboutRouter);
 app.use('/results', resultsRouter);
 

@@ -14,3 +14,9 @@ a {
   text-align: left;
   overflow: auto;
 }
+
+.formSearch {
+  border: 2px;
+  padding:20px;
+  color:red;
+}
