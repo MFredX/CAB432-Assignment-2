@@ -1,6 +1,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var router = express.Router();
+var call = require('../public/javascripts/twitter');
 
 /* POST results - listening. */
 router.get("/", function(req, res, next) {
@@ -33,7 +34,7 @@ router.get("/", function(req, res, next) {
 
   //TODO: Display results
 
-  res.status(200).render("results", { hashtags: hashtags });
+  res.status(200).render("results", { hashtags: hashtags});
 });
 
 module.exports = router;
