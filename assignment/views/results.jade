@@ -9,8 +9,7 @@ block content
                 each hashtag in hashtags
                     .ui.image.label
                         | # #{hashtag}
-                        //-i.delete.icon
-                
-            //-each tweet in tweets
-                div(class="infoBlock")
-                    p #{tweet.text}
+            each tweet in tweetData
+                div(class='infoBlock')
+                    p Tweet: #{tweet[0]}
+                    p Score: #{tweet[1]}
