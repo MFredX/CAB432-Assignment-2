@@ -11,6 +11,6 @@ block content
                         | # #{hashtag}
                         //-i.delete.icon
                 
-            
-            div(class="infoBlock")
-                p Insert some sick graphs and analysis
+            //-each tweet in tweets
+                div(class="infoBlock")
+                    p #{tweet.text}
