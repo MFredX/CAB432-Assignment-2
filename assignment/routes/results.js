@@ -1,7 +1,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var router = express.Router();
-var call = require('../public/javascripts/twitter');
+var twitter = require('../public/javascripts/twitter');
 
 /* POST results - listening. */
 router.get("/", function(req, res, next) {
@@ -24,7 +24,9 @@ router.get("/", function(req, res, next) {
 
   //TODO: Check S3 - if S3 has data, send data
 
-  //TODO: Request tweets for each hastag from Twitter
+  //TODO: Request tweets for each hastag from Twitter - twit library
+
+  twitter.getTweets();
 
   //TODO: Get sentiment analysis for each set of tweets
 
