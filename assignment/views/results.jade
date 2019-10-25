@@ -12,7 +12,13 @@ block content
                 div(class='infoBlock')
                     p Tweet: #{tweet[0]}
                     p Score: #{tweet[1]}
-                
+
+            each singleScore in scoreData
+                p Score: #{singleScore} 
+            each singleF in scoreF
+                P Score Frequency: #{singleF}
+
+
             canvas#myChart(width='400', height='400')
             script.
                 var ctx = document.getElementById("myChart").getContext("2d");
@@ -24,6 +30,7 @@ block content
                 {
                 label: "# of Votes",
                 data: [12, 19, 3, 5, 2, 3],
+                //- data: scoreData,
                 backgroundColor: [
                 "rgba(255, 99, 132, 0.2)",
                 "rgba(54, 162, 235, 0.2)",
