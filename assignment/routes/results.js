@@ -61,27 +61,31 @@ router.get("/", function (req, res, next) {
       //console.log(JSON.stringify(result));
       responses.push([tweet, result]);
     }
-    // console.log(responses);
-    counts = scoreTracker(responses);
-    console.log(counts);
-    // console.log(counts[10]);
-    // console.log("This is the score of the 10th Tweet: " + responses[10][1]);
-    res.status(200).render("results", { hashtags: hashtags, tweetData: responses, data: JSON.stringify(chartOptions) });
+    [scores, scoreFrequency] = scoreSorter(responses);
+    console.log(scores);
+    console.log(scoreFrequency);
+    res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: scores, scoreFrequency });
   });
 
-  //This function calculates the count of tweets for each score and returns an object with 
-  //the corresponding information
-  function scoreTracker(responses) {
-    var counts = {};
-    for (let i = 0; i < responses.length; i++) {
-      //Accessing the score of each tweet in responses array
-      const element = responses[i][1];
-      counts[element] = counts[element] ? counts[element] + 1 : 1;
-      //Priniting each element for verification
-      // console.log(element);
 
+  //This function calculates the count of tweets for each score and returns two arrays
+  //a-Scores 
+  //b-Scorefrequency
+  function scoreSorter(responses) {
+    var a = [], b = [], prev;
+
+    responses.sort();
+    for (var i = 0; i < responses.length; i++) {
+      if (responses[i][1] !== prev) {
+        a.push(responses[i][1]);
+        b.push(1);
+      } else {
+        b[b.length - 1]++;
+      }
+      prev = responses[i][1];
     }
-    return counts;
+
+    return [a, b];
   }
   //TODO: Get sentiment analysis for each set of tweets
 
