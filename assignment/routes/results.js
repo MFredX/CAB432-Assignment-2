@@ -62,8 +62,8 @@ router.get("/", function (req, res, next) {
       responses.push([tweet, result]);
     }
     [scores, scoreFrequency] = scoreSorter(responses);
-    console.log(scores);
-    console.log(scoreFrequency);
+    // console.log(scores);
+    // console.log(scoreFrequency);
     res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: scores, scoreF: scoreFrequency });
   });
 
@@ -72,19 +72,17 @@ router.get("/", function (req, res, next) {
   //a-Scores 
   //b-Scorefrequency
   function scoreSorter(responses) {
-    var a = [], b = [], prev;
-
-    responses.sort();
-    for (var i = 0; i < responses.length; i++) {
-      if (responses[i][1] !== prev) {
-        a.push(responses[i][1]);
-        b.push(1);
-      } else {
-        b[b.length - 1]++;
-      }
-      prev = responses[i][1];
+    var counts = {};
+    for (let i = 0; i < responses.length; i++) {
+      //Accessing the score of each tweet in responses array
+      const element = responses[i][1];
+      counts[element] = counts[element] ? counts[element] + 1 : 1;
     }
-
+    a = Object.keys(counts);
+    b = Object.values(counts)
+    console.log(a);
+    console.log(b);
+    // b = values(counts);
     return [a, b];
   }
   //TODO: Get sentiment analysis for each set of tweets
