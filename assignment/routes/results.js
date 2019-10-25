@@ -62,7 +62,8 @@ router.get("/", function (req, res, next) {
       responses.push([tweet, result]);
     }
     [scores, scoreFrequency] = scoreSorter(responses);
-    // console.log(scores);
+    console.log(typeof scores[0]);
+    console.log(typeof scoreFrequency[0]);
     // console.log(scoreFrequency);
     res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: scores, scoreF: scoreFrequency });
   });
