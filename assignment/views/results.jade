@@ -26,11 +26,11 @@ block content
                 type: "bar",
                 data: {
                 //- labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-                labels:["#{scoreF}"],
+                labels:"!{scoreData}",
                 datasets: [
                 {
                 label: "Score Frequency",
-                data: "#{scoreData}",
+                data: "!{scoreF}",
                 backgroundColor: [
                 "rgba(255, 99, 132, 0.2)",
                 "rgba(54, 162, 235, 0.2)",

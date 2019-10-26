@@ -65,7 +65,7 @@ router.get("/", function (req, res, next) {
     console.log(typeof scores[0]);
     console.log(typeof scoreFrequency[0]);
     // console.log(scoreFrequency);
-    res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: scores, scoreF: scoreFrequency });
+    res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: JSON.stringify(scores), scoreF: JSON.stringify(scoreFrequency) });
   });
 
 
