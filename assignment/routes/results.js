@@ -9,6 +9,11 @@ const CONFIG = require("../config.json");
 const chart = require('chart.js')
 const redis = require('redis');
 
+const AWS = require("aws-sdk");
+const bucketName = "cab432-tweetz-bucket";
+
+
+
 // This section will change for Cloud Services or will it not?
 const redisClient = redis.createClient();
 redisClient.on('error', (err) => {
@@ -53,9 +58,8 @@ router.get("/", function (req, res, next) {
   console.log(date);
   var rediskey = `Twitter:${hashtagsforKey}${date}`;
   console.log(rediskey);
-
-
-
+  const s3Key = `s3Twitter-${hashtagsforKey}-${date}`;
+  const params = { Bucket: bucketName, Key: s3Key };
 
   redisClient.get(rediskey, (err, result) => {
     if (result) {
@@ -76,7 +80,29 @@ router.get("/", function (req, res, next) {
         res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: JSON.stringify(scores), scoreF: JSON.stringify(scoreFrequency) });
         redisClient.setex(rediskey, 3600, JSON.stringify(data.statuses));
         console.log("Data has now been stored in the cache");
+
+        //Begin S3 Storage operations
+        new AWS.S3({ apiVersion: "2006-03-01" }).getObject(
+          params,
+          (err, result) => {
+            // Storing relevant data in S3
+            const body = JSON.stringify(data.statuses);
+            const objectParams = { Bucket: bucketName, Key: s3Key, Body: body };
+            console.log("Made it here 1");
+            const uploadPromise = new AWS.S3({ apiVersion: "2006-03-01" })
+              .putObject(objectParams)
+              .promise();
+            console.log("Made it here 2");
+            uploadPromise.then(function (data) {
+              console.log(
+                "Successfully uploaded data to " + bucketName + "/" + s3Key
+              );
+            });
+          }
+        );
+
       });
+
 
     }
   });
