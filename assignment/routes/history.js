@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET about page. */
+/* GET local history page. */
 router.get('/', function (req, res, next) {
-  res.render('about');
+    res.render('history');
 });
 
 module.exports = router;

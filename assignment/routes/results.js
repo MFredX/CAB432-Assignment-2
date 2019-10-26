@@ -8,9 +8,6 @@ let Sentiment = require('sentiment');
 const CONFIG = require("../config.json");
 const chart = require('chart.js')
 
-var responses_x_questions = require('../public/javascripts/barcharts.json');
-var clone = require('clone');
-
 /* POST results - listening. */
 router.get("/", function (req, res, next) {
   var hashtags = req.query["hashtags"];
@@ -51,7 +48,7 @@ router.get("/", function (req, res, next) {
   let sentiment = new Sentiment();
 
 
-  T.get('search/tweets', { q: hashtags, count: 10, language: 'en' }, function (err, data, response) {
+  T.get('search/tweets', { q: hashtags, count: 100, language: 'en' }, function (err, data, response) {
     let tweets = data.statuses;
     let responses = [];
     for (let i = 0; i < tweets.length; i++) {
