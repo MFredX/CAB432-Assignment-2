@@ -48,41 +48,49 @@ router.get("/", function (req, res, next) {
   });
 
   let sentiment = new Sentiment();
+  var today = new Date();
+  var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '|' + today.getHours() + ":" + today.getMinutes();
+  console.log(date);
+  var rediskey = `Twitter:${hashtagsforKey}${date}`;
+  console.log(rediskey);
 
 
-  T.get('search/tweets', { q: hashtags, count: 100, language: 'en' }, function (err, data, response) {
-    let tweets = data.statuses;
+
+
+  redisClient.get(rediskey, (err, result) => {
+    if (result) {
+      console.log("Data is in the redis cache")
+      const resultJSON = JSON.parse(result);
+      responses = doTweetStuff(resultJSON);
+      [scores, scoreFrequency] = scoreSorter(responses);
+      console.log("Data is now served from the cache")
+      res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: JSON.stringify(scores), scoreF: JSON.stringify(scoreFrequency) });
+
+    } else {
+      console.log("Not in the cache")
+      T.get('search/tweets', { q: hashtags, count: 100, language: 'en' }, function (err, data, response) {
+        let tweets = data.statuses;
+        responses = doTweetStuff(tweets);
+        [scores, scoreFrequency] = scoreSorter(responses);
+
+        res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: JSON.stringify(scores), scoreF: JSON.stringify(scoreFrequency) });
+        redisClient.setex(rediskey, 3600, JSON.stringify(data.statuses));
+        console.log("Data has now been stored in the cache");
+      });
+
+    }
+  });
+
+  //This function does tweet response analysis
+  function doTweetStuff(tweets) {
     let responses = [];
     for (let i = 0; i < tweets.length; i++) {
       tweet = tweets[i].text;
       let result = JSON.stringify(sentiment.analyze(tweet).score);
-      //console.log('result: ' + result + '. Text: ' + tweet);
-      //console.log(JSON.stringify(result));
       responses.push([tweet, result]);
     }
-    [scores, scoreFrequency] = scoreSorter(responses);
-
-    var today = new Date();
-    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '|' + today.getHours() + ":" + today.getMinutes();
-    console.log(date);
-    var rediskey = `Twitter:${hashtagsforKey}${date}`;
-    console.log(rediskey);
-
-    redisClient.get(rediskey, (err, result) => {
-      if (result) {
-        console.log("Data is in the cache")
-      } else {
-        console.log("Not in the cache")
-        redisClient.setex(rediskey, 3600, JSON.stringify({ scoreData: scores, scoreF: scoreFrequency }));
-        console.log("Data has now been stored in the cache");
-      }
-    });
-
-
-
-    res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: JSON.stringify(scores), scoreF: JSON.stringify(scoreFrequency) });
-  });
-
+    return responses;
+  }
 
   //This function calculates the count of tweets for each score and returns two arrays
   //a-Scores 
