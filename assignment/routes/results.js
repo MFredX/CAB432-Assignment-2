@@ -7,18 +7,20 @@ let Twit = require('twit');
 let Sentiment = require('sentiment');
 const CONFIG = require("../config.json");
 const chart = require('chart.js')
+const redis = require('redis');
+
+// This section will change for Cloud Services or will it not?
+const redisClient = redis.createClient();
+redisClient.on('error', (err) => {
+  console.log("Error " + err);
+});
+
 
 /* POST results - listening. */
 router.get("/", function (req, res, next) {
   var hashtags = req.query["hashtags"];
+  hashtagsforKey = hashtags;
   hashtags = hashtags.split(",");
-
-
-  var chartOptions = clone(responses_x_questions);
-  var categories = ["newCat1", "newCat2", "newCat3", "newCat4", "newCat5"];
-  chartOptions.xAxis[0].data = categories;
-  chartOptions.series[0].data = [10, 20, 30, 40, 50];
-
 
   //Send error page if array is empty
   if (hashtags == "") {
@@ -59,9 +61,25 @@ router.get("/", function (req, res, next) {
       responses.push([tweet, result]);
     }
     [scores, scoreFrequency] = scoreSorter(responses);
-    console.log(typeof scores[0]);
-    console.log(typeof scoreFrequency[0]);
-    // console.log(scoreFrequency);
+
+    var today = new Date();
+    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '|' + today.getHours() + ":" + today.getMinutes();
+    console.log(date);
+    var rediskey = `Twitter:${hashtagsforKey}${date}`;
+    console.log(rediskey);
+
+    redisClient.get(rediskey, (err, result) => {
+      if (result) {
+        console.log("Data is in the cache")
+      } else {
+        console.log("Not in the cache")
+        redisClient.setex(rediskey, 3600, JSON.stringify({ scoreData: scores, scoreF: scoreFrequency }));
+        console.log("Data has now been stored in the cache");
+      }
+    });
+
+
+
     res.status(200).render("results", { hashtags: hashtags, tweetData: responses, scoreData: JSON.stringify(scores), scoreF: JSON.stringify(scoreFrequency) });
   });
 
@@ -80,7 +98,6 @@ router.get("/", function (req, res, next) {
     b = Object.values(counts)
     console.log(a);
     console.log(b);
-    // b = values(counts);
     return [a, b];
   }
   //TODO: Get sentiment analysis for each set of tweets
