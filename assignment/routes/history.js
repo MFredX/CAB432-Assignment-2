@@ -1,28 +1,9 @@
 var express = require('express');
 var router = express.Router();
 const redis = require('redis');
-const aws = require('aws-sdk');
-
-console.log("First page line");
-
 
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
-
-// var storedKeys = [];
-// const listAllKeys = (params, out = []) => new Promise((resolve, reject) => {
-//     s3.listObjectsV2(params).promise()
-//         .then(({ Contents, IsTruncated, NextContinuationToken }) => {
-//             out.push(...Contents);
-//             !IsTruncated ? resolve(out) : resolve(listAllKeys(Object.assign(params, { ContinuationToken: NextContinuationToken }), out));
-
-//         })
-//         .catch(reject);
-// });
-
-// listAllKeys({ Bucket: 'cab432-tweetz-bucket' })
-//     .then(console.log)
-//     .catch(console.log);
 
 async function listAllObjectsFromS3Bucket(bucket) {
     awskeys = [];
@@ -34,7 +15,7 @@ async function listAllObjectsFromS3Bucket(bucket) {
         try {
             const response = await s3.listObjects(params).promise();
             response.Contents.forEach(item => {
-                console.log(item.Key);
+                // console.log(item.Key);
                 awskeys.push(item.Key);
             });
             isTruncated = response.IsTruncated;
@@ -45,13 +26,33 @@ async function listAllObjectsFromS3Bucket(bucket) {
             throw error;
         }
     }
-    // return awskeys;
+    return awskeys;
 }
 listAllObjectsFromS3Bucket('cab432-tweetz-bucket');
 
 
 /* GET local history page. */
 router.get('/', function (req, res, next) {
+    listAllObjectsFromS3Bucket('cab432-tweetz-bucket')
+
+    .then((awskeys) => {
+        awskeys.forEach(item => {
+            const params = { Bucket: 'cab432-tweetz-bucket', Key: item};
+            return new AWS.S3({apiVersion: '2006-03-01'}).getObject(params, (err  , result) =>   {
+                if (result) {
+                    let objectData = result.Body.toString('utf-8');
+                    let tweets = JSON.parse(objectData);
+                    tweets.forEach(tweet => {
+                        console.log(tweet.text);
+                    })
+                }
+            })
+        })
+    })
+    .then((hello) => {
+        console.log(hello);
+    });
+    
     res.render('history');
 });
 
