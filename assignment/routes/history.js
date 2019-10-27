@@ -1,6 +1,7 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const redis = require('redis');
+const Sentiment = require('sentiment');
 
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
@@ -12,49 +13,30 @@ router.get('/', async function (req, res, next) {
 
     let tweets = await getTweetsFromKeys(keys);
 
-    
+    let sentiments = await getSentimentAnalysis(tweets);
 
-    // console.log('KEYS: ', keys)
-    // console.log('tweets: ', tweets)
+    res.render('history', { keys, sentiments})
 
-    res.render('history', { keys })
-
-    // listAllObjectsFromS3Bucket('cab432-tweetz-bucket').then((awskeys) => {
-
-    // }).then((obj)=> {
-    //     console.log(obj.master);
-    //     res.render('history', {keys: obj.awskeys});
-
-    // });
-
-    // .then((data) => {
-    //     res.render('history', {keys: data});
-    // });
-
-    // .then((awskeys) => {
-    //     let all = [];
-
-    //     awskeys.forEach(item => {
-    //         let hashtagData = [];
-
-    //         const params = { Bucket: 'cab432-tweetz-bucket', Key: item};
-
-    //         new AWS.S3({apiVersion: '2006-03-01'}).getObject(params, (err  , result) =>   {
-    //             if (result) {
-    //                 let objectData = result.Body.toString('utf-8');
-    //                 let tweets = JSON.parse(objectData);
-    //                 tweets.forEach(tweet => {
-    //                     //console.log(tweet.text);
-    //                     hashtagData.push(tweet.text);
-    //                 })
-    //             }
-    //         })
-    //         let fullHashtagData = {hashtag: item, data: hashtagData};
-    //         all.push(fullHashtagData);
-    //     })
-    //     console.log(all);
-    // })
 });
+
+async function getSentimentAnalysis(tweets) {
+    let sentiment = new Sentiment();
+    console.log('in getsentimentanalysis')
+    let master = [];
+
+    for (let i = 0; i < tweets.length; i++) {
+        let hashtag = [];
+        for (let j = 0; j < tweets[i].length; j++) {
+            let tweet = tweets[i][j];
+            let result = JSON.stringify(sentiment.analyze(tweet).score);
+            hashtag.push(result);
+        }
+
+        master.push(hashtag);
+    }
+
+    return master;
+}
 
 async function getTweetsFromKeys(awsKeys) {
     let master = [];
