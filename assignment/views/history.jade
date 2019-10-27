@@ -3,8 +3,11 @@ extends layout
 block content
     .ui.container
         .ui.basic.center.aligned.segment
-            h1 User Search History
+            h1 Search History
             p 
-            | You can view your past searches on this page.
-            | This past search information is served from Reddis
+            | You can view past searches on this page.
+            | This past search information is served from S3
+            each key in keys
+                div(class='infoBlock')
+                    p #{key}
            
