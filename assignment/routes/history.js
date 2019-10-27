@@ -4,7 +4,7 @@ const redis = require('redis');
 const Sentiment = require('sentiment');
 
 const AWS = require('aws-sdk');
-const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+const s3 = new AWS.S3();
 
 /* GET local history page. */
 router.get('/', async function (req, res, next) {
@@ -81,5 +81,32 @@ async function listAllObjectsFromS3Bucket(bucket) {
     }
     return awskeys;
 }
+listAllObjectsFromS3Bucket('cab432-tweetz-bucket');
+
+
+/* GET local history page. */
+router.get('/', function (req, res, next) {
+    listAllObjectsFromS3Bucket('cab432-tweetz-bucket')
+
+    .then((awskeys) => {
+        awskeys.forEach(item => {
+            const params = { Bucket: 'cab432-tweetz-bucket', Key: item};
+            return new AWS.S3({apiVersion: '2006-03-01'}).getObject(params, (err  , result) =>   {
+                if (result) {
+                    let objectData = result.Body.toString('utf-8');
+                    let tweets = JSON.parse(objectData);
+                    tweets.forEach(tweet => {
+                        console.log(tweet.text);
+                    })
+                }
+            })
+        })
+    })
+    .then((hello) => {
+        console.log(hello);
+    });
+    
+    res.render('history');
+});
 
 module.exports = router;
