@@ -5,15 +5,9 @@ block content
         .ui.basic.center.aligned.segment
             h1 User Search History
             p 
-<<<<<<< HEAD
             | You can view past searches on this page.
             | This past search information is served from S3
-            each key in keys
+            each key, index in keys
                 div(class='infoBlock')
-                    p #{key}
-                    p #{sentiments[key]}
-=======
-            | You can view your past searches on this page.
-            | This past search information is served from Reddis
-           
->>>>>>> shannonHistory
+                    p(style="float:left;") Hashtags:&nbsp;&nbsp;#{key}
+                    p(style="float:right;") Average sentiment score:&nbsp;&nbsp;#{sentiments[index]}

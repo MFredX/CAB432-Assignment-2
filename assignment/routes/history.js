@@ -14,6 +14,8 @@ router.get('/', async function (req, res, next) {
     let tweets = await getTweetsFromKeys(keys);
 
     let sentiments = await getSentimentAnalysis(tweets);
+    
+    keys = keys.map(key => key.substring(10, key.length-17)); //chop off the s3 key formatting
 
     res.render('history', { keys, sentiments})
 
@@ -21,18 +23,19 @@ router.get('/', async function (req, res, next) {
 
 async function getSentimentAnalysis(tweets) {
     let sentiment = new Sentiment();
-    console.log('in getsentimentanalysis')
     let master = [];
 
     for (let i = 0; i < tweets.length; i++) {
-        let hashtag = [];
+        let hashtag = 0;
         for (let j = 0; j < tweets[i].length; j++) {
             let tweet = tweets[i][j];
             let result = JSON.stringify(sentiment.analyze(tweet).score);
-            hashtag.push(result);
+            hashtag = hashtag + Number(result);
+            //hashtag.push(result);
         }
+        let avg = Math.round(hashtag / tweets[i].length);
 
-        master.push(hashtag);
+        master.push(avg);
     }
 
     return master;
