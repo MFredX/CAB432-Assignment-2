@@ -9,6 +9,8 @@ const helmet = require("helmet");
 var indexRouter = require("./routes/index");
 var aboutRouter = require("./routes/about");
 var resultsRouter = require("./routes/results");
+var historyRouter = require("./routes/history");
+
 
 var app = express();
 
@@ -31,9 +33,11 @@ const port = 3000;
 app.use("/", indexRouter);
 app.use("/about", aboutRouter);
 app.use("/results", resultsRouter);
+app.use("/history", historyRouter);
+
 
 //handle 404 errors
-app.use(function(req, res) {
+app.use(function (req, res) {
   return res
     .status(404)
     .render("error", {
@@ -43,6 +47,6 @@ app.use(function(req, res) {
     });
 });
 
-app.listen(port, function() {
+app.listen(port, function () {
   console.log(`Express app listening at http://${hostname}:${port}/`);
 });
